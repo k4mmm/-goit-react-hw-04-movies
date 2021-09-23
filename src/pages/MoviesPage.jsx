@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
 import Searchbar from "../components/Searchbar/Searchbar";
 import { getSearchMovie } from "../service/movieApi";
-import { Link, useRouteMatch } from "react-router-dom";
+import { Link, useRouteMatch, useLocation, useHistory } from "react-router-dom";
 
 export default function MoviesPages() {
-  const [search, setSearch] = useState(null);
+  const location = useLocation();
+  const history = useHistory();
+
+  const searchParam = new URLSearchParams(location.search).get("query") ?? "";
+
+  const [search, setSearch] = useState(searchParam);
   const [films, setFilms] = useState([]);
 
   const { url } = useRouteMatch();
@@ -20,8 +25,8 @@ export default function MoviesPages() {
 
   const onSearchClick = (query) => {
     setSearch(query);
+    history.push({ ...location, search: `query=${query}` });
   };
-
   return (
     <>
       <Searchbar onSubmit={onSearchClick} />
@@ -29,7 +34,14 @@ export default function MoviesPages() {
         {films.map((film) => {
           return (
             <li key={film.id}>
-              <Link to={`${url}/${film.id}`}>{film.original_title}</Link>
+              <Link
+                to={{
+                  pathname: `${url}/${film.id}`,
+                  state: { from: location },
+                }}
+              >
+                {film.original_title}
+              </Link>
             </li>
           );
         })}

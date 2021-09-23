@@ -9,7 +9,7 @@ export const getTrendingMovie = async () => {
 };
 
 export const getSearchMovie = async (query) => {
-  const searchUrl = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=en-US&query=${query}&page=1&include_adult=false`;
+  const searchUrl = `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${query}`;
   const searchResponse = await axios.get(searchUrl);
   return searchResponse;
 };

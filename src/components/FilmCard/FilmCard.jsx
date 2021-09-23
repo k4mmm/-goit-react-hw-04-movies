@@ -1,10 +1,18 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { Link, Switch, Route, useRouteMatch } from "react-router-dom";
+import {
+  Link,
+  Switch,
+  Route,
+  useRouteMatch,
+  useParams,
+  useHistory,
+  useLocation,
+} from "react-router-dom";
 import { getMovieById } from "../../service/movieApi";
 import Cast from "../Cast/Cast";
 import FilmReviews from "../FilmReviews/FilmReviews";
 import s from "./FilmCard.module.css";
+
 export default function FilmCard() {
   const { movieId } = useParams();
   const [film, setFilm] = useState(null);
@@ -17,6 +25,12 @@ export default function FilmCard() {
   }, [movieId]);
 
   const { url, path } = useRouteMatch();
+  const history = useHistory();
+  const location = useLocation();
+
+  const onGoBackClick = () => {
+    history.push(location?.state?.from);
+  };
 
   const dateNormalize = (date) => {
     return date.slice(0, -6);
@@ -32,7 +46,11 @@ export default function FilmCard() {
 
   return (
     <>
-      <button type="button">Go Back</button>
+      {location?.state?.from && (
+        <button type="button" onClick={onGoBackClick}>
+          Go Back
+        </button>
+      )}
       {film && (
         <div className={s.movieDetailes}>
           <img
