@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getReviews } from "../../service/movieApi.js";
+import PropTypes from "prop-types";
 
 export default function FilmReviews({ movieId }) {
   const [reviews, setRevievs] = useState([]);
@@ -29,3 +30,7 @@ export default function FilmReviews({ movieId }) {
     </>
   );
 }
+
+FilmReviews.propTypes = {
+  movieId: PropTypes.string.isRequired,
+};

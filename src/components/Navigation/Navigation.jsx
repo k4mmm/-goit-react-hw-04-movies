@@ -1,16 +1,15 @@
-import { NavLink } from "react-router-dom";
-import s from "./Navigation.module.css";
+import { StyledNav, StyledNavLink } from "./Navigation.styled";
 
 const Navigation = () => {
   return (
-    <nav className={s.nav}>
-      <NavLink exact to="/" className={s.link} activeClassName={s.activeLink}>
+    <StyledNav>
+      <StyledNavLink exact to="/" activeStyle={{ color: "#2196f3" }}>
         Home
-      </NavLink>
-      <NavLink to="/movies" className={s.link} activeClassName={s.activeLink}>
+      </StyledNavLink>
+      <StyledNavLink to="/movies" activeStyle={{ color: "#2196f3" }}>
         Movies
-      </NavLink>
-    </nav>
+      </StyledNavLink>
+    </StyledNav>
   );
 };
 

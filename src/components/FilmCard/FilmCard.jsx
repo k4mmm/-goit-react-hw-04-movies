@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import {
-  Link,
   Switch,
   Route,
   useRouteMatch,
@@ -8,25 +7,38 @@ import {
   useHistory,
   useLocation,
 } from "react-router-dom";
+import {
+  MovieDetailes,
+  StyledImg,
+  StyledBtn,
+  StyledP,
+  StyledLi,
+  StyledLink,
+  StyledUl,
+} from "./FilmCard.styled";
 import { getMovieById } from "../../service/movieApi";
-import Cast from "../Cast/Cast";
-import FilmReviews from "../FilmReviews/FilmReviews";
-import s from "./FilmCard.module.css";
+
+const Cast = lazy(() => import("../Cast/Cast" /* webpackChunkName: "Cast" */));
+const FilmReviews = lazy(() =>
+  import("../FilmReviews/FilmReviews" /* webpackChunkName: "FilmReviews" */)
+);
 
 export default function FilmCard() {
-  const { movieId } = useParams();
   const [film, setFilm] = useState(null);
+
   const imgBaseUrl = "https://image.tmdb.org/t/p/w500/";
+
   const imgNotFound =
     "https://www.publicdomainpictures.net/pictures/280000/velka/not-found-image-15383864787lu.jpg";
+
+  const { movieId } = useParams();
+  const { url, path } = useRouteMatch();
+  const history = useHistory();
+  const location = useLocation();
 
   useEffect(() => {
     getMovieById(movieId).then((res) => setFilm(res.data));
   }, [movieId]);
-
-  const { url, path } = useRouteMatch();
-  const history = useHistory();
-  const location = useLocation();
 
   const onGoBackClick = () => {
     history.push(location?.state?.from);
@@ -47,13 +59,13 @@ export default function FilmCard() {
   return (
     <>
       {location?.state?.from && (
-        <button type="button" onClick={onGoBackClick}>
+        <StyledBtn type="button" onClick={onGoBackClick}>
           Go Back
-        </button>
+        </StyledBtn>
       )}
       {film && (
-        <div className={s.movieDetailes}>
-          <img
+        <MovieDetailes>
+          <StyledImg
             src={
               film.poster_path
                 ? `${imgBaseUrl}${film.poster_path}`
@@ -61,41 +73,58 @@ export default function FilmCard() {
             }
             alt={film.original_title}
           />
-          <div className="movie-info">
+          <div>
             <h1>
               {film.original_title} ({dateNormalize(film.release_date)})
             </h1>
-            <p>User Score: {film.vote_average}</p>
+            <StyledP>User Score: {film.vote_average}</StyledP>
             <h2>Overview</h2>
-            <p>{film.overview}</p>
+            <StyledP>{film.overview}</StyledP>
             {film.genres && (
               <>
                 <h3>Genres</h3>
-                <p>{genresNormalize(film.genres)}</p>
+                <StyledP>{genresNormalize(film.genres)}</StyledP>
               </>
             )}
           </div>
-        </div>
+        </MovieDetailes>
       )}
+
       <div>
         <h4>Additional informatiom</h4>
-        <ul>
+        <StyledUl>
+          <StyledLi>
+            <StyledLink
+              to={{
+                pathname: `${url}/cast`,
+                state: { from: location?.state?.from },
+              }}
+            >
+              Cast
+            </StyledLink>
+          </StyledLi>
           <li>
-            <Link to={`${url}/cast`}>Cast</Link>
+            <StyledLink
+              to={{
+                pathname: `${url}/reviews`,
+                state: { from: location?.state?.from },
+              }}
+            >
+              Reviews
+            </StyledLink>
           </li>
-          <li>
-            <Link to={`${url}/reviews`}>Reviews</Link>
-          </li>
-        </ul>
+        </StyledUl>
       </div>
-      <Switch>
-        <Route path={`${path}/cast`}>
-          <Cast movieId={movieId} baseImg={imgBaseUrl} noImg={imgNotFound} />
-        </Route>
-        <Route path={`${path}/reviews`}>
-          <FilmReviews movieId={movieId} />
-        </Route>
-      </Switch>
+      <Suspense fallback={<h1>LOADING...</h1>}>
+        <Switch>
+          <Route path={`${path}/cast`}>
+            <Cast movieId={movieId} baseImg={imgBaseUrl} noImg={imgNotFound} />
+          </Route>
+          <Route path={`${path}/reviews`}>
+            <FilmReviews movieId={movieId} />
+          </Route>
+        </Switch>
+      </Suspense>
     </>
   );
 }

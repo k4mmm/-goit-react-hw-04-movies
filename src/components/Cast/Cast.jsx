@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { getCastById } from "../../service/movieApi.js";
+import { StyledImg, StyledUl, StyledLi, StyledSpan } from "./Cast.styled";
+import PropTypes from "prop-types";
 
 export default function Cast({ movieId, baseImg, noImg }) {
   const [cast, setCast] = useState(null);
@@ -13,11 +15,11 @@ export default function Cast({ movieId, baseImg, noImg }) {
   return (
     <>
       {cast && (
-        <ul>
+        <StyledUl>
           {cast.map((el) => {
             return (
-              <li key={el.id}>
-                <img
+              <StyledLi key={el.id}>
+                <StyledImg
                   src={
                     el.profile_path
                       ? `${baseImg}${el.profile_path}`
@@ -25,12 +27,18 @@ export default function Cast({ movieId, baseImg, noImg }) {
                   }
                   alt={el.name}
                 />
-                <span>{el.name}</span>
-              </li>
+                <StyledSpan>{el.name}</StyledSpan>
+              </StyledLi>
             );
           })}
-        </ul>
+        </StyledUl>
       )}
     </>
   );
 }
+
+Cast.propTypes = {
+  movieId: PropTypes.string.isRequired,
+  baseImg: PropTypes.string.isRequired,
+  noImg: PropTypes.string.isRequired,
+};
